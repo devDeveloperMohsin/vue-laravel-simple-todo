@@ -1957,6 +1957,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -1974,14 +1976,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "add-todo",
   data: function data() {
     return {
       todo: ''
     };
+  },
+  methods: {
+    submitTodo: function submitTodo() {
+      var _this = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/todo', {
+        todo: this.todo
+      }, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(function (response) {
+        if (response.data.response == "success") {
+          _this.todo = '';
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
   }
 });
 
@@ -2040,6 +2061,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _TodoItem_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TodoItem.vue */ "./resources/js/components/todo/TodoItem.vue");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
 //
 //
 //
@@ -2056,10 +2079,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "todo",
   components: {
     TodoItem: _TodoItem_vue__WEBPACK_IMPORTED_MODULE_0__.default
+  },
+  data: function data() {
+    return {
+      todos: []
+    };
   },
   computed: {
     title: function title() {
@@ -2070,6 +2099,29 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return title;
+    }
+  },
+  mounted: function mounted() {
+    this.fetchData();
+  },
+  methods: {
+    fetchData: function fetchData() {
+      var _this = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_1___default().get('/api/todo', {
+        headers: {
+          'Accept': 'application/json'
+        }
+      }).then(function (response) {
+        _this.todos = response.data.data;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    todoDelete: function todoDelete(deleteTodoId) {
+      this.todos = this.todos.filter(function (todoItem) {
+        return todoItem.id != deleteTodoId;
+      });
     }
   }
 });
@@ -2087,6 +2139,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2097,7 +2151,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: ['todo'],
+  methods: {
+    deleteTodo: function deleteTodo() {
+      var _this = this;
+
+      var mainInstance = this;
+      axios__WEBPACK_IMPORTED_MODULE_0___default().delete("/api/todo/".concat(this.$props.todo.id)).then(function (response) {
+        if (response.data.response == "success") {
+          mainInstance.$emit('todo-deleted', _this.$props.todo.id);
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -44521,35 +44592,37 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "card-body" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Write something")]),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.todo,
-                  expression: "todo"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { type: "text" },
-              domProps: { value: _vm.todo },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.todo = $event.target.value
-                }
-              }
-            })
-          ]),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", [_vm._v("Write something")]),
           _vm._v(" "),
-          _c("button", { staticClass: "btn btn-primary" }, [_vm._v("Submit")])
-        ])
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.todo,
+                expression: "todo"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text" },
+            domProps: { value: _vm.todo },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.todo = $event.target.value
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", on: { click: _vm.submitTodo } },
+          [_vm._v("Submit")]
+        )
       ])
     ])
   ])
@@ -44650,8 +44723,12 @@ var render = function() {
         _c(
           "ul",
           { staticClass: "list-group list-group-flush" },
-          _vm._l(5, function(i) {
-            return _c("todo-item", { key: i })
+          _vm._l(_vm.todos, function(todo, index) {
+            return _c("todo-item", {
+              key: index,
+              attrs: { todo: todo },
+              on: { "todo-deleted": _vm.todoDelete }
+            })
           }),
           1
         )
@@ -44683,7 +44760,8 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("li", { staticClass: "list-group-item d-flex" }, [
-    _vm._v("\n\tCras justo odio\n\t"),
+    _c("span", [_vm._v(_vm._s(_vm.todo.todo))]),
+    _vm._v(" "),
     _c(
       "div",
       { staticClass: "action ml-auto" },
@@ -44697,9 +44775,14 @@ var render = function() {
           [_vm._v("Edit")]
         ),
         _vm._v(" "),
-        _c("button", { staticClass: "btn-danger btn btn-sm" }, [
-          _vm._v("Delete")
-        ])
+        _c(
+          "button",
+          {
+            staticClass: "btn-danger btn btn-sm",
+            on: { click: _vm.deleteTodo }
+          },
+          [_vm._v("Delete")]
+        )
       ],
       1
     )

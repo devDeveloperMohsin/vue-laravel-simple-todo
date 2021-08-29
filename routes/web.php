@@ -24,7 +24,3 @@ Route::get('/{any}', function () {
 // Auth::routes();
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// Route::view('/analytics','analytics')->name('analytics.dashboard');
-// Route::view('/welcome','welcome');
-// Route::get('/analytics-records', [App\Http\Controllers\AnalyticsController::class,'index'])->name('analytics.fetch');
