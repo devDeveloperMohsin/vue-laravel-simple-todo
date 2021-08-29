@@ -13,9 +13,20 @@ class TodoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return TodoResource::collection(Todo::latest()->get());
+        switch($request->input('filter')){
+            case 'completed':
+                $todos = Todo::where('completed',1)->latest()->get();
+                break;
+            case 'pending':
+                $todos = Todo::where('completed',0)->latest()->get();
+                break;
+            default:
+            $todos = Todo::latest()->get();
+        }
+        
+        return TodoResource::collection($todos);
     }
 
     /**
@@ -46,7 +57,14 @@ class TodoController extends Controller
      */
     public function show($id)
     {
-        abort(404);
+        $todo = Todo::findOrFail($id);
+        $todo->completed = !$todo->completed;
+        $todo->save();
+
+        return response()->json([
+            'response' => 'success',
+            'message' => __('Todo Item Status Changed')
+        ], 200);
     }
 
     /**

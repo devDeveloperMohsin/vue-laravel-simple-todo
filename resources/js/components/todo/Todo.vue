@@ -39,9 +39,20 @@
 		mounted(){
 			this.fetchData();
 		},
+		watch: {
+			$route(to, from){
+				this.fetchData();
+			}
+		},
 		methods: {
 			fetchData(){
-				axios.get('/api/todo',{
+
+				let filter = '';
+				if('filter' in this.$route.params){
+					filter = this.$route.params.filter;
+				}
+
+				axios.get(`/api/todo?filter=${filter}`,{
 						headers: {
 							'Accept': 'application/json',
 						}
