@@ -19,3 +19,8 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::apiResource('todo',App\Http\Controllers\TodoController::class);
+
+Route::post('login', [App\Http\Controllers\AuthController::class,'login']);
+Route::get('logout', [App\Http\Controllers\AuthController::class,'logout']);
+Route::post('register', [App\Http\Controllers\AuthController::class,'register']);
+Route::get('someting', [App\Http\Controllers\AuthController::class,'something']);

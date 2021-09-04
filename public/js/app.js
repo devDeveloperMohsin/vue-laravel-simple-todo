@@ -2019,6 +2019,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -2038,12 +2040,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "edit-todo",
   data: function data() {
     return {
-      todo: 'This is for editing'
+      todo: null,
+      showSuccess: '',
+      showError: ''
     };
+  },
+  created: function created() {
+    this.todo = this.$route.params.todo;
+  },
+  methods: {
+    updateTodo: function updateTodo() {
+      var _this = this;
+
+      this.showSuccess = '';
+      this.showError = '';
+      axios__WEBPACK_IMPORTED_MODULE_0___default().put("/api/todo/".concat(this.todo.id), {
+        todo: this.todo.todo
+      }).then(function (response) {
+        _this.showSuccess = response.data.message;
+        console.log(response);
+      })["catch"](function (error) {
+        console.log(error);
+        _this.showError = error;
+      });
+    }
   }
 });
 
@@ -2334,6 +2368,7 @@ var routes = [{
   component: _components_todo_AddTodo_vue__WEBPACK_IMPORTED_MODULE_0__.default
 }, {
   path: '/edit-todo',
+  name: "edittodo",
   component: _components_todo_EditTodo_vue__WEBPACK_IMPORTED_MODULE_1__.default
 }, {
   path: '*',
@@ -45106,37 +45141,67 @@ var render = function() {
         _vm._v("\n\t\t\tEdit Todo\n\t\t")
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "card-body" }, [
-        _c("form", { attrs: { action: "" } }, [
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", [_vm._v("Write something")]),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.todo,
-                  expression: "todo"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: { type: "text" },
-              domProps: { value: _vm.todo },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.todo = $event.target.value
-                }
-              }
-            })
-          ]),
+      _c(
+        "div",
+        { staticClass: "card-body" },
+        [
+          _vm.showSuccess
+            ? _c("div", { staticClass: "alert alert-success" }, [
+                _vm._v("\n\t\t\t\t" + _vm._s(_vm.showSuccess) + "\n\t\t\t")
+              ])
+            : _vm._e(),
           _vm._v(" "),
-          _c("button", { staticClass: "btn btn-primary" }, [_vm._v("Submit")])
-        ])
-      ])
+          _vm.showError
+            ? _c("div", { staticClass: "alert alert-danger" }, [
+                _vm._v("\n\t\t\t\t" + _vm._s(_vm.showError) + "\n\t\t\t")
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          !_vm.todo
+            ? _c("div", { staticClass: "alert alert-danger" }, [
+                _vm._v(
+                  "\n\t\t\t\tSystem does not identify which todo to edit\n\t\t\t"
+                )
+              ])
+            : [
+                _c("div", { staticClass: "form-group" }, [
+                  _c("label", [_vm._v("Write something")]),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.todo.todo,
+                        expression: "todo.todo"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: { type: "text" },
+                    domProps: { value: _vm.todo.todo },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.$set(_vm.todo, "todo", $event.target.value)
+                      }
+                    }
+                  })
+                ]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    on: { click: _vm.updateTodo }
+                  },
+                  [_vm._v("Submit")]
+                )
+              ]
+        ],
+        2
+      )
     ])
   ])
 }
@@ -45227,7 +45292,12 @@ var render = function() {
           "router-link",
           {
             staticClass: "btn btn-primary btn-sm",
-            attrs: { to: "/edit-todo" }
+            attrs: {
+              to: {
+                name: "edittodo",
+                params: { todo: _vm.todo, todo: _vm.todo }
+              }
+            }
           },
           [_vm._v("Edit")]
         ),

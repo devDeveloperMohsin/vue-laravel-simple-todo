@@ -11,4 +11,14 @@ class AnalyticsController extends Controller
         $analytics = RequestLog::latest()->get();
         return response()->json($analytics);
     }
+
+    public function test(){
+        $x = "foo";
+        $this->$x();
+    }
+
+    public function foo()
+        {
+            echo 'hello';
+        }
 }

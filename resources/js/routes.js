@@ -18,6 +18,7 @@ export const routes = [
 	},
 	{
 		path: '/edit-todo',
+		name: "edittodo",
 		component: EditTodo,
 	},
 	{

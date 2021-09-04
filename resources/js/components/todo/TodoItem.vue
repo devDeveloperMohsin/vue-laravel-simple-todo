@@ -7,7 +7,7 @@
 			{{ todo.todo }}
 		</span>
 		<div class="action ml-auto">
-			<router-link to="/edit-todo" class="btn btn-primary btn-sm">Edit</router-link>
+			<router-link :to="{ name: 'edittodo', params: {todo, todo} }" class="btn btn-primary btn-sm">Edit</router-link>
 			<button class="btn-danger btn btn-sm" @click="deleteTodo">Delete</button>
 		</div>
 	</li>

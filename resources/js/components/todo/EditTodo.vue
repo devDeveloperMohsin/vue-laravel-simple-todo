@@ -5,24 +5,57 @@
 				Edit Todo
 			</div>
 			<div class="card-body">
-				<form action="">
+				<div class="alert alert-success" v-if="showSuccess">
+					{{ showSuccess }}
+				</div>
+				<div class="alert alert-danger" v-if="showError">
+					{{ showError }}
+				</div>
+				<div class="alert alert-danger" v-if="!todo">
+					System does not identify which todo to edit
+				</div>
+				<template v-else>
 					<div class="form-group">
 						<label>Write something</label>
-						<input type="text" class="form-control" v-model="todo">
+						<input type="text" class="form-control" v-model="todo.todo">
 					</div>
-					<button class="btn btn-primary">Submit</button>
-				</form>
+					<button class="btn btn-primary" @click="updateTodo">Submit</button>
+				</template>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+	import axios from 'axios';
+
 	export default{
 		name: "edit-todo",
 		data(){
 			return {
-				todo: 'This is for editing',
+				todo: null,
+				showSuccess: '',
+				showError: '',
+			};
+		},
+		created(){
+			this.todo = this.$route.params.todo;
+		},
+		methods: {
+			updateTodo(){
+				this.showSuccess = '';
+				this.showError = '';
+				axios.put(`/api/todo/${this.todo.id}`,{
+						todo : this.todo.todo
+					})
+					.then( (response) => {
+						this.showSuccess = response.data.message;
+						console.log(response);
+					} )
+					.catch( (error) => {
+						console.log(error);
+						this.showError = error;
+					} );
 			}
 		}
 	}
