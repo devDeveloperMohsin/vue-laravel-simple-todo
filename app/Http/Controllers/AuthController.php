@@ -41,7 +41,7 @@ class AuthController extends Controller
   public function register(Request $request){
     $validData = $request->validate([
       'name' => ['required','string','max:191'],
-      'email' => ['required','email','string','max:191'],
+      'email' => ['required','email','string','max:191','unique:users,email'],
       'password' => ['required','string','min:8'],
     ]);
 
@@ -58,7 +58,7 @@ class AuthController extends Controller
     Auth::user()->currentAccessToken()->delete();
 
     return response()->json([
-        'response' => 'success',
+      'response' => 'success',
     ]);
   }
 }

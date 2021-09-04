@@ -9,12 +9,69 @@ import axios from 'axios';
 import Vue from 'vue';
 import VueRouter from 'vue-router'
 import {routes} from './routes.js';
+import Vuex from 'vuex';
 
 Vue.use(VueRouter);
+Vue.use(Vuex);
+
+
+let userIsLoggedin = '';
+let userHasToken = '';
+
+if(localStorage.getItem('user_token') !== undefined || localStorage.getItem('user_token') !== ""){
+  userIsLoggedin = true;
+  userHasToken = localStorage.getItem('user_token');
+}
+
+
+const store = new Vuex.Store({
+  state: {
+    isLoggedin : userIsLoggedin,
+    userToken : userHasToken,
+  },
+
+  getters:{
+    userToken(state){
+      return state.userToken;
+    },
+    isLoggedin(state){
+      return state.isLoggedin;
+    }
+  },
+
+  mutations: {
+    login(state,payload){
+      state.userToken = payload.token;
+      state.isLoggedin = true;
+    },
+    logout(state){
+      state.userToken = null;
+      state.isLoggedin = false;
+    }
+  },
+
+  actions: {
+
+  },
+});
 
 const router = new VueRouter({
   routes: routes,
   mode : 'history'
+});
+
+router.beforeEach( (to,from,next) => {
+  if(to.matched.some( record => record.meta.requiresAuth)){
+    if(!store.getters.isLoggedin){
+      next({
+        path: '/login',
+      });
+    }
+    next();
+  }
+  else{
+    next() // make sure to always call next()!
+  }
 });
 
 /**
@@ -42,6 +99,7 @@ Vue.component('app', require('./components/App.vue').default);
 const app = new Vue({
     el: '#app',
     router,
+    store,
     data: {
       testing: 'No Data',
     },
